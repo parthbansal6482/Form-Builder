@@ -1,17 +1,43 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { BLOCK_TYPES } from '../context/FormContext';
+import { BlockType } from '../types';
 
-export default function SlashMenu({ onSelect, onClose, position }) {
+interface SlashMenuProps {
+  onSelect: (type: BlockType) => void;
+  onClose: () => void;
+  position: { x: number; y: number };
+}
+
+export default function SlashMenu({ onSelect, onClose, position }: SlashMenuProps) {
   const [search, setSearch] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
-  const inputRef = useRef(null);
+  const [adjustedPosition, setAdjustedPosition] = useState(position);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (menuRef.current) {
+      const menuRect = menuRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      
+      // If menu goes off bottom, flip it to show above the trigger
+      if (position.y + menuRect.height > viewportHeight) {
+        setAdjustedPosition({
+          x: position.x,
+          y: position.y - menuRect.height - 16 // 16px buffer
+        });
+      } else {
+        setAdjustedPosition(position);
+      }
+    }
+  }, [position]);
 
   const filtered = useMemo(() => 
     BLOCK_TYPES.filter(b => b.label.toLowerCase().includes(search.toLowerCase())),
   [search]);
 
   const categories = useMemo(() => {
-    const cats = {
+    const cats: Record<string, BlockType[]> = {
       'Basic Fields': ['short_text', 'long_text', 'email', 'number', 'phone', 'url', 'date'],
       'Choices': ['multiple_choice', 'checkbox', 'dropdown'],
       'Advanced': ['rating'],
@@ -32,7 +58,7 @@ export default function SlashMenu({ onSelect, onClose, position }) {
   }, []);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         setActiveIndex(i => (i + 1) % flatItems.length);
@@ -53,8 +79,9 @@ export default function SlashMenu({ onSelect, onClose, position }) {
   }, [flatItems, activeIndex, onSelect, onClose]);
 
   useEffect(() => {
-    const handleOutsideClick = (e) => {
-      if (!e.target.closest('.slash-menu-container')) {
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.slash-menu-container')) {
         onClose();
       }
     };
@@ -66,8 +93,9 @@ export default function SlashMenu({ onSelect, onClose, position }) {
 
   return (
     <div 
+      ref={menuRef}
       className="slash-menu-container fixed bg-surface-container-lowest border border-surface-variant rounded-2xl shadow-[0_12px_32px_rgba(0,0,0,0.12)] flex flex-col z-[100] w-[320px] overflow-hidden backdrop-blur-md bg-opacity-95" 
-      style={{ top: position.y, left: position.x }}
+      style={{ top: adjustedPosition.y, left: adjustedPosition.x }}
     >
       <div className="px-3 py-2 border-b border-surface-variant bg-surface-container-low/30">
         <div className="flex items-center gap-2">

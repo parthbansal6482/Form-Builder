@@ -1,7 +1,15 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { FormContext } from '../context/FormContext';
+import { Block } from '../types';
 
-const InputPreview = ({ block, disabled, value, onChange }) => {
+interface InputPreviewProps {
+  block: Block;
+  disabled: boolean;
+  value?: any;
+  onChange?: (val: any) => void;
+}
+
+const InputPreview: React.FC<InputPreviewProps> = ({ block, disabled, value, onChange }) => {
   switch (block.type) {
     case 'short_text':
     case 'email':
@@ -10,7 +18,7 @@ const InputPreview = ({ block, disabled, value, onChange }) => {
     case 'number':
       return (
         <input
-          type={block.type === 'short_text' ? 'text' : block.type}
+          type={block.type === 'short_text' ? 'text' : (block.type === 'phone' ? 'tel' : block.type)}
           className="border border-surface-variant rounded-xl px-3 py-2.5 w-full focus:border-on-surface focus:outline-none transition-colors font-body-md text-body-md bg-transparent"
           placeholder={block.placeholder}
           disabled={disabled}
@@ -43,7 +51,7 @@ const InputPreview = ({ block, disabled, value, onChange }) => {
       return (
         <div className="flex flex-col gap-2">
           {block.options.map((opt, i) => (
-            <label key={i} className="flex items-center gap-2">
+            <label key={i} className="flex items-center gap-2 cursor-pointer">
               <input 
                 type="radio" 
                 name={`mc_${block.id}`} 
@@ -52,7 +60,7 @@ const InputPreview = ({ block, disabled, value, onChange }) => {
                 checked={value === opt}
                 onChange={() => onChange?.(opt)}
               />
-              <span className="font-body-md text-body-md">{opt}</span>
+              <span className="font-body-md text-body-md text-on-surface">{opt}</span>
             </label>
           ))}
         </div>
@@ -61,7 +69,7 @@ const InputPreview = ({ block, disabled, value, onChange }) => {
       return (
         <div className="flex flex-col gap-2">
           {block.options.map((opt, i) => (
-            <label key={i} className="flex items-center gap-2">
+            <label key={i} className="flex items-center gap-2 cursor-pointer">
               <input 
                 type="checkbox" 
                 className="w-4 h-4 text-primary border-surface-variant focus:ring-primary rounded"
@@ -77,7 +85,7 @@ const InputPreview = ({ block, disabled, value, onChange }) => {
                   }
                 }}
               />
-              <span className="font-body-md text-body-md">{opt}</span>
+              <span className="font-body-md text-body-md text-on-surface">{opt}</span>
             </label>
           ))}
         </div>
@@ -85,7 +93,7 @@ const InputPreview = ({ block, disabled, value, onChange }) => {
     case 'dropdown':
       return (
         <select 
-          className="border border-surface-variant rounded-xl px-3 py-2.5 w-full focus:border-on-surface focus:outline-none transition-colors font-body-md text-body-md bg-transparent"
+          className="border border-surface-variant rounded-xl px-3 py-2.5 w-full focus:border-on-surface focus:outline-none transition-colors font-body-md text-body-md bg-transparent text-on-surface"
           disabled={disabled}
           value={value || ''}
           onChange={e => onChange?.(e.target.value)}
@@ -120,29 +128,34 @@ const InputPreview = ({ block, disabled, value, onChange }) => {
   }
 };
 
-export default function BlockRow({ block, value, onChange, error }) {
+interface BlockRowProps {
+  block: Block;
+  value?: any;
+  onChange?: (val: any) => void;
+  error?: string;
+}
+
+export default function BlockRow({ block, value, onChange, error }: BlockRowProps) {
   const { state, dispatch } = useContext(FormContext);
   const isSelected = state.selectedId === block.id;
   const isPreview = state.activeTab === 'preview';
-  
-  // No longer needed: const [val, setVal] = useState('');
 
-  const handleLabelChange = (e) => {
-    dispatch({ type: 'UPDATE_BLOCK', payload: { id: block.id, changes: { label: e.currentTarget.textContent } } });
+  const handleLabelChange = (e: React.FocusEvent<HTMLSpanElement>) => {
+    dispatch({ type: 'UPDATE_BLOCK', payload: { id: block.id, changes: { label: e.currentTarget.textContent || '' } } });
   };
 
-  const handleDragStart = (e) => {
+  const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData('text/plain', block.id);
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     if (state.dragOverId !== block.id) {
       dispatch({ type: 'SET_DRAG_OVER', payload: block.id });
     }
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     const fromId = e.dataTransfer.getData('text/plain');
     if (fromId && fromId !== block.id) {

@@ -1,6 +1,7 @@
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useReducer, ReactNode } from 'react';
+import { FormState, FormAction, BlockTypeConfig, Block } from '../types';
 
-export const BLOCK_TYPES = [
+export const BLOCK_TYPES: BlockTypeConfig[] = [
   { type: 'short_text', label: 'Short Text', icon: 'short_text', description: 'Single line text input', defaultLabel: 'Short text', defaultPlaceholder: 'Enter your answer' },
   { type: 'long_text', label: 'Long Text', icon: 'notes', description: 'Multi-line text input', defaultLabel: 'Long text', defaultPlaceholder: 'Enter your answer' },
   { type: 'email', label: 'Email', icon: 'mail', description: 'Email address input', defaultLabel: 'Email', defaultPlaceholder: 'Enter your email' },
@@ -18,17 +19,17 @@ export const BLOCK_TYPES = [
 
 export const uid = () => Math.random().toString(36).slice(2, 9);
 
-const initialState = {
+const initialState: FormState = {
   title: '',
   description: '',
   blocks: [],
   selectedId: null,
-  activeTab: 'build', // 'build' | 'preview' | 'submitted'
+  activeTab: 'build',
   dragOverId: null,
-  sidePanelTab: 'content', // 'content' | 'design' | 'logic' | 'settings'
+  sidePanelTab: 'content',
 };
 
-function reducer(state, action) {
+function reducer(state: FormState, action: FormAction): FormState {
   switch (action.type) {
     case 'SET_TITLE':
       return { ...state, title: action.payload };
@@ -36,7 +37,9 @@ function reducer(state, action) {
       return { ...state, description: action.payload };
     case 'ADD_BLOCK': {
       const typeConfig = BLOCK_TYPES.find((b) => b.type === action.payload.type);
-      const newBlock = {
+      if (!typeConfig) return state;
+      
+      const newBlock: Block = {
         id: uid(),
         type: typeConfig.type,
         label: typeConfig.defaultLabel,
@@ -72,7 +75,7 @@ function reducer(state, action) {
     case 'DUPLICATE_BLOCK': {
       const blockToCopy = state.blocks.find((b) => b.id === action.payload);
       if (!blockToCopy) return state;
-      const newBlock = { ...blockToCopy, id: uid() };
+      const newBlock: Block = { ...blockToCopy, id: uid() };
       const index = state.blocks.indexOf(blockToCopy);
       const newBlocks = [...state.blocks];
       newBlocks.splice(index + 1, 0, newBlock);
@@ -102,9 +105,15 @@ function reducer(state, action) {
   }
 }
 
-export const FormContext = createContext();
+export const FormContext = createContext<{
+  state: FormState;
+  dispatch: React.Dispatch<FormAction>;
+}>({
+  state: initialState,
+  dispatch: () => null,
+});
 
-export const FormProvider = ({ children }) => {
+export const FormProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   return (

@@ -1,37 +1,38 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { FormContext } from '../context/FormContext';
 import BlockRow from './BlockRow';
 import SlashMenu from './SlashMenu';
+import { BlockType } from '../types';
 
 export default function FormCanvas() {
   const { state, dispatch } = useContext(FormContext);
-  const [slashMenu, setSlashMenu] = useState(null);
-  const [responses, setResponses] = useState({});
-  const [errors, setErrors] = useState([]);
+  const [slashMenu, setSlashMenu] = useState<{ x: number; y: number; afterId: string | null } | null>(null);
+  const [responses, setResponses] = useState<Record<string, any>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const isPreview = state.activeTab === 'preview';
   const isSubmitted = state.activeTab === 'submitted';
 
-  const handleGhostKey = (e) => {
+  const handleGhostKey = (e: React.KeyboardEvent) => {
     if (e.key === '/') {
       e.preventDefault();
-      const rect = e.target.getBoundingClientRect();
+      const rect = (e.target as HTMLElement).getBoundingClientRect();
       setSlashMenu({ x: rect.left, y: rect.bottom + 8, afterId: null });
     }
   };
 
-  const handleInsert = (type) => {
+  const handleInsert = (type: BlockType) => {
     if (!slashMenu) return;
     dispatch({ type: 'ADD_BLOCK', payload: { type, afterId: slashMenu.afterId } });
     setSlashMenu(null);
   };
 
   const handleSubmit = () => {
-    const newErrors = {};
+    const newErrors: Record<string, string> = {};
     
     state.blocks.forEach(block => {
       const val = responses[block.id];
-      const isNotEmpty = val && (Array.isArray(val) ? val.length > 0 : val.toString().trim() !== '');
+      const isNotEmpty = val !== undefined && val !== null && (Array.isArray(val) ? val.length > 0 : val.toString().trim() !== '');
 
       // 1. Required Check
       if (block.required && !isNotEmpty) {
@@ -66,17 +67,18 @@ export default function FormCanvas() {
     dispatch({ type: 'SET_TAB', payload: 'submitted' });
   };
 
-  React.useEffect(() => {
-    const handleGlobalKeyDown = (e) => {
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (isPreview || isSubmitted) return;
       
-      const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName) || 
-                       document.activeElement?.isContentEditable;
+      const activeEl = document.activeElement as HTMLElement | null;
+      const isTyping = activeEl && (['INPUT', 'TEXTAREA'].includes(activeEl.tagName) || activeEl.isContentEditable);
                        
       if (e.key === '/' && !isTyping) {
         e.preventDefault();
         const ghostRow = document.querySelector('.formly-ghost-row-trigger');
         if (ghostRow) {
+          ghostRow.scrollIntoView({ behavior: 'auto', block: 'nearest' });
           const rect = ghostRow.getBoundingClientRect();
           setSlashMenu({ x: rect.left, y: rect.bottom + 8, afterId: null });
         }
@@ -148,7 +150,9 @@ export default function FormCanvas() {
               tabIndex={0}
               onKeyDown={handleGhostKey}
               onClick={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
+                const target = e.currentTarget;
+                target.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+                const rect = target.getBoundingClientRect();
                 setSlashMenu({ x: rect.left, y: rect.bottom + 8, afterId: null });
               }}
             >

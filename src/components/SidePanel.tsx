@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { FormContext, BLOCK_TYPES } from '../context/FormContext';
+import { Block } from '../types';
 
 export default function SidePanel() {
   const { state, dispatch } = useContext(FormContext);
@@ -21,17 +22,17 @@ export default function SidePanel() {
 
   const typeConfig = BLOCK_TYPES.find(b => b.type === block.type);
 
-  const update = (changes) => {
+  const update = (changes: Partial<Block>) => {
     dispatch({ type: 'UPDATE_BLOCK', payload: { id: block.id, changes } });
   };
 
-  const handleOptionChange = (idx, val) => {
+  const handleOptionChange = (idx: number, val: string) => {
     const newOptions = [...block.options];
     newOptions[idx] = val;
     update({ options: newOptions });
   };
 
-  const removeOption = (idx) => {
+  const removeOption = (idx: number) => {
     const newOptions = block.options.filter((_, i) => i !== idx);
     update({ options: newOptions });
   };
@@ -39,8 +40,6 @@ export default function SidePanel() {
   const addOption = () => {
     update({ options: [...block.options, `Option ${block.options.length + 1}`] });
   };
-
-
 
   return (
     <aside className="w-[300px] border-l border-surface-variant bg-surface-container-lowest flex flex-col flex-shrink-0 relative z-40 shadow-[-4px_0_12px_rgba(0,0,0,0.02)]">
@@ -125,7 +124,8 @@ export default function SidePanel() {
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={(e) => {
                         e.preventDefault();
-                        const fromIdx = parseInt(e.dataTransfer.getData('text/plain'));
+                        const fromIdxStr = e.dataTransfer.getData('text/plain');
+                        const fromIdx = parseInt(fromIdxStr);
                         if (!isNaN(fromIdx) && fromIdx !== i) {
                           const newOptions = [...block.options];
                           const [moved] = newOptions.splice(fromIdx, 1);
@@ -160,8 +160,6 @@ export default function SidePanel() {
                 </div>
               </div>
             )}
-        {/* Settings Content Ends */}
-
       </div>
     </aside>
   );

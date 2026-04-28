@@ -1,4 +1,4 @@
-import FormBuilder from './FormBuilder.jsx'
+import FormBuilder from './FormBuilder'
 import './App.css'
 
 function App() {
@@ -10,4 +10,3 @@ function App() {
 }
 
 export default App
-
