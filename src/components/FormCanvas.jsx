@@ -6,6 +6,8 @@ import SlashMenu from './SlashMenu';
 export default function FormCanvas() {
   const { state, dispatch } = useContext(FormContext);
   const [slashMenu, setSlashMenu] = useState(null);
+  const [responses, setResponses] = useState({});
+  const [errors, setErrors] = useState([]);
 
   const isPreview = state.activeTab === 'preview';
   const isSubmitted = state.activeTab === 'submitted';
@@ -22,6 +24,46 @@ export default function FormCanvas() {
     if (!slashMenu) return;
     dispatch({ type: 'ADD_BLOCK', payload: { type, afterId: slashMenu.afterId } });
     setSlashMenu(null);
+  };
+
+  const handleSubmit = () => {
+    const newErrors = {};
+    
+    state.blocks.forEach(block => {
+      const val = responses[block.id];
+      const isNotEmpty = val && (Array.isArray(val) ? val.length > 0 : val.toString().trim() !== '');
+
+      // 1. Required Check
+      if (block.required && !isNotEmpty) {
+        newErrors[block.id] = 'This field is required';
+        return;
+      }
+
+      // 2. Format Check (only if not empty)
+      if (isNotEmpty) {
+        if (block.type === 'email') {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(val)) newErrors[block.id] = 'Please enter a valid email address';
+        } else if (block.type === 'url') {
+          try { new URL(val); } catch (_) { newErrors[block.id] = 'Please enter a valid URL (including https://)'; }
+        } else if (block.type === 'phone') {
+          const phoneRegex = /^\+?[\d\s-]{7,20}$/;
+          if (!phoneRegex.test(val)) newErrors[block.id] = 'Please enter a valid phone number';
+        } else if (block.type === 'number') {
+          if (isNaN(val)) newErrors[block.id] = 'Please enter a valid number';
+        }
+      }
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      const firstError = Object.values(newErrors)[0];
+      alert(`Validation Error: ${firstError}`);
+      return;
+    }
+
+    setErrors({});
+    dispatch({ type: 'SET_TAB', payload: 'submitted' });
   };
 
   React.useEffect(() => {
@@ -60,7 +102,7 @@ export default function FormCanvas() {
   }
 
   return (
-    <main className="flex-1 overflow-y-auto bg-surface-container-lowest relative" onClick={() => !isPreview && dispatch({ type: 'SELECT_BLOCK', payload: null })}>
+    <main className="flex-1 overflow-y-auto bg-surface-container-lowest relative no-scrollbar" onClick={() => !isPreview && dispatch({ type: 'SELECT_BLOCK', payload: null })}>
       <div className={`mx-auto pt-xl pb-2xl px-lg flex flex-col relative ${isPreview ? 'max-w-[640px]' : 'max-w-[760px]'}`} onClick={(e) => e.stopPropagation()}>
         
         {/* Form Header */}
@@ -91,14 +133,24 @@ export default function FormCanvas() {
             </div>
           )}
           {state.blocks.map((block) => (
-            <BlockRow key={block.id} block={block} />
+            <BlockRow 
+              key={block.id} 
+              block={block} 
+              value={responses[block.id]}
+              onChange={(val) => setResponses({ ...responses, [block.id]: val })}
+              error={errors[block.id]}
+            />
           ))}
 
-          {!isPreview && (
+          {!isPreview && !slashMenu && (
             <div 
               className="formly-ghost-row-trigger text-on-surface-variant font-body-md text-body-md cursor-text mt-4 ml-md w-max outline-none hover:text-on-surface transition-colors"
               tabIndex={0}
               onKeyDown={handleGhostKey}
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                setSlashMenu({ x: rect.left, y: rect.bottom + 8, afterId: null });
+              }}
             >
               Type / to add a block
             </div>
@@ -108,7 +160,7 @@ export default function FormCanvas() {
             <div className="mt-6">
               <button 
                 className="bg-primary hover:bg-inverse-surface text-on-primary rounded-lg px-6 py-2.5 font-body-md text-body-md font-medium transition-colors"
-                onClick={() => dispatch({ type: 'SET_TAB', payload: 'submitted' })}
+                onClick={handleSubmit}
               >
                 Submit &rarr;
               </button>

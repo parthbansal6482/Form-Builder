@@ -4,6 +4,9 @@ import { FormContext, BLOCK_TYPES } from '../context/FormContext';
 export default function SidePanel() {
   const { state, dispatch } = useContext(FormContext);
   const block = state.blocks.find(b => b.id === state.selectedId);
+  const isPreview = state.activeTab === 'preview';
+  
+  if (isPreview) return null;
   
   if (!block) {
     return (
@@ -51,7 +54,7 @@ export default function SidePanel() {
       </div>
 
       {/* Settings Content */}
-      <div className="p-6 flex flex-col gap-8 overflow-y-auto">
+      <div className="p-6 flex flex-col gap-8 overflow-y-auto no-scrollbar">
             {/* Required Toggle */}
             {block.type !== 'heading' && block.type !== 'paragraph' && (
               <>

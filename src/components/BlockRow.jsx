@@ -120,12 +120,12 @@ const InputPreview = ({ block, disabled, value, onChange }) => {
   }
 };
 
-export default function BlockRow({ block }) {
+export default function BlockRow({ block, value, onChange, error }) {
   const { state, dispatch } = useContext(FormContext);
   const isSelected = state.selectedId === block.id;
   const isPreview = state.activeTab === 'preview';
   
-  const [val, setVal] = useState('');
+  // No longer needed: const [val, setVal] = useState('');
 
   const handleLabelChange = (e) => {
     dispatch({ type: 'UPDATE_BLOCK', payload: { id: block.id, changes: { label: e.currentTarget.textContent } } });
@@ -162,7 +162,8 @@ export default function BlockRow({ block }) {
             {block.required && <span className="text-error ml-1">*</span>}
           </div>
         )}
-        <InputPreview block={block} disabled={false} value={val} onChange={setVal} />
+        <InputPreview block={block} disabled={false} value={value} onChange={onChange} />
+        {error && <div className="text-error font-caption text-caption mt-1">{error}</div>}
       </div>
     );
   }
@@ -171,7 +172,7 @@ export default function BlockRow({ block }) {
     <React.Fragment>
       {state.dragOverId === block.id && <div className="h-0.5 bg-primary w-full my-1" />}
       <div 
-        className={`group flex flex-col gap-2 p-md border rounded-xl transition-colors ${isSelected ? 'bg-surface border-surface-variant border-l-[3px] border-l-primary rounded-l-none z-10' : 'border-transparent hover:border-surface-variant cursor-pointer'}`}
+        className={`group flex flex-col gap-2 p-md border rounded-xl transition-colors ${isSelected ? 'bg-surface border-surface-variant border-l-[3px] border-l-primary rounded-l-none z-10' : error ? 'border-error bg-error-container/10' : 'border-transparent hover:border-surface-variant cursor-pointer'}`}
         onClick={() => dispatch({ type: 'SELECT_BLOCK', payload: block.id })}
         onDragOver={handleDragOver}
         onDrop={handleDrop}

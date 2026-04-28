@@ -24,8 +24,7 @@ export default function TopNavBar() {
         </button>
       </div>
       <div className="flex items-center gap-sm">
-        <button className="border border-surface-variant text-on-surface px-4 py-1.5 rounded-lg font-body-md text-body-md font-medium hover:bg-surface-container-low transition-colors">Share</button>
-        <button className="bg-primary text-on-primary px-4 py-1.5 rounded-lg font-body-md text-body-md font-medium hover:bg-inverse-surface transition-colors">Publish</button>
+
         <div className="w-8 h-8 rounded-full bg-surface-variant ml-2 overflow-hidden border border-surface-variant">
           <img alt="User profile" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADHmYGm5jHZosBCpQbMsbGbzrCPEqKbSaQV-YNZAllVOg5hdRxHilAMmwyrm8Xm36P8PnmBdwnocFHTo6RW0RzEWHKUTkY6VOHA-x2HsLh05ZzH2bxJ5kEDnHoVeX-aAdhnxHf95KBytkEfrAYzZqzz0OF3ms5IM_1vZuG_7HWU4_7MA1QpngPoWhSmuqN0YJCEj4V1D0V_yRW9QXZ8D5KCIYe7jvftasQbPww93pSBsjEsh0Dg5qkNR0CzSJaJfpznOi7YOoIfRA"/>
         </div>
