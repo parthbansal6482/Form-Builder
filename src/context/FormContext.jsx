@@ -9,7 +9,7 @@ export const BLOCK_TYPES = [
   { type: 'url', label: 'URL', icon: 'link', description: 'Website link input', defaultLabel: 'Website', defaultPlaceholder: 'https://' },
   { type: 'date', label: 'Date', icon: 'calendar_month', description: 'Date picker', defaultLabel: 'Date', defaultPlaceholder: '' },
   { type: 'multiple_choice', label: 'Multiple Choice', icon: 'radio_button_checked', description: 'Select one option', defaultLabel: 'Multiple Choice', defaultPlaceholder: '', options: ['Option 1', 'Option 2'] },
-  { type: 'checkbox', label: 'Checkbox', icon: 'check_box', description: 'Single checkbox', defaultLabel: 'Checkbox', defaultPlaceholder: '' },
+  { type: 'checkbox', label: 'Checkboxes', icon: 'check_box', description: 'Select multiple options', defaultLabel: 'Checkboxes', defaultPlaceholder: '', options: ['Choice 1', 'Choice 2'] },
   { type: 'dropdown', label: 'Dropdown', icon: 'arrow_drop_down_circle', description: 'Select from a dropdown', defaultLabel: 'Dropdown', defaultPlaceholder: 'Select an option', options: ['Option 1', 'Option 2'] },
   { type: 'rating', label: 'Rating', icon: 'star', description: '5 star rating', defaultLabel: 'Rating', defaultPlaceholder: '' },
   { type: 'heading', label: 'Heading', icon: 'match_case', description: 'Large bold text', defaultLabel: 'Heading', defaultPlaceholder: '' },

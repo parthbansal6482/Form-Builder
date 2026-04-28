@@ -108,8 +108,8 @@ export default function SidePanel() {
               </div>
             )}
 
-            {/* Options (for multiple choice/dropdown) */}
-            {(block.type === 'multiple_choice' || block.type === 'dropdown') && (
+            {/* Options (for multiple choice/checkbox/dropdown) */}
+            {(block.type === 'multiple_choice' || block.type === 'checkbox' || block.type === 'dropdown') && (
               <div className="flex flex-col gap-2.5">
                 <label className="font-label-caps text-label-caps text-on-surface-variant uppercase">Options</label>
                 <div className="flex flex-col gap-2">

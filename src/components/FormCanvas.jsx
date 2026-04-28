@@ -24,6 +24,26 @@ export default function FormCanvas() {
     setSlashMenu(null);
   };
 
+  React.useEffect(() => {
+    const handleGlobalKeyDown = (e) => {
+      if (isPreview || isSubmitted) return;
+      
+      const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName) || 
+                       document.activeElement?.isContentEditable;
+                       
+      if (e.key === '/' && !isTyping) {
+        e.preventDefault();
+        const ghostRow = document.querySelector('.formly-ghost-row-trigger');
+        if (ghostRow) {
+          const rect = ghostRow.getBoundingClientRect();
+          setSlashMenu({ x: rect.left, y: rect.bottom + 8, afterId: null });
+        }
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [isPreview, isSubmitted]);
+
   if (isSubmitted) {
     return (
       <main className="flex-1 overflow-y-auto bg-surface-container-lowest relative flex flex-col items-center justify-center p-8">
@@ -76,12 +96,11 @@ export default function FormCanvas() {
 
           {!isPreview && (
             <div 
-              className="flex items-center gap-2 p-md text-on-surface-variant font-body-md text-body-md cursor-text hover:bg-surface-container-low rounded-xl transition-colors mt-2 ml-md w-max outline-none"
+              className="formly-ghost-row-trigger text-on-surface-variant font-body-md text-body-md cursor-text mt-4 ml-md w-max outline-none hover:text-on-surface transition-colors"
               tabIndex={0}
               onKeyDown={handleGhostKey}
             >
-              <span className="material-symbols-outlined text-[20px]">add</span>
-              <span>Type / to add a block</span>
+              Type / to add a block
             </div>
           )}
 

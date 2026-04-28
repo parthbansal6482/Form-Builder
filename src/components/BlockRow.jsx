@@ -59,16 +59,28 @@ const InputPreview = ({ block, disabled, value, onChange }) => {
       );
     case 'checkbox':
       return (
-        <label className="flex items-center gap-2">
-          <input 
-            type="checkbox" 
-            className="w-4 h-4 text-primary border-surface-variant focus:ring-primary rounded"
-            disabled={disabled}
-            checked={!!value}
-            onChange={e => onChange?.(e.target.checked)}
-          />
-          <span className="font-body-md text-body-md">{block.label}</span>
-        </label>
+        <div className="flex flex-col gap-2">
+          {block.options.map((opt, i) => (
+            <label key={i} className="flex items-center gap-2">
+              <input 
+                type="checkbox" 
+                className="w-4 h-4 text-primary border-surface-variant focus:ring-primary rounded"
+                disabled={disabled}
+                checked={Array.isArray(value) ? value.includes(opt) : false}
+                onChange={e => {
+                  if (disabled) return;
+                  const currentValues = Array.isArray(value) ? [...value] : [];
+                  if (e.target.checked) {
+                    onChange?.([...currentValues, opt]);
+                  } else {
+                    onChange?.(currentValues.filter(v => v !== opt));
+                  }
+                }}
+              />
+              <span className="font-body-md text-body-md">{opt}</span>
+            </label>
+          ))}
+        </div>
       );
     case 'dropdown':
       return (

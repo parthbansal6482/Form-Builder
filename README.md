@@ -2,7 +2,6 @@
 
 Formly is a high-performance, minimalist, and monochrome form builder inspired by the structural honesty of Notion and the playful simplicity of Tally.so. It provides a clean, "editor-first" canvas that empowers users to build complex forms without the distraction of a cluttered UI.
 
-![Formly UI](https://github.com/parthbansal6482/Form-Builder/blob/main/src/assets/hero.png?raw=true)
 
 ## ✨ Features
 
