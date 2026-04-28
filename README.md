@@ -1,18 +1,71 @@
-# React + Vite
+# Formly — Minimalist Form Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Formly is a high-performance, minimalist, and monochrome form builder inspired by the structural honesty of Notion and the playful simplicity of Tally.so. It provides a clean, "editor-first" canvas that empowers users to build complex forms without the distraction of a cluttered UI.
 
-Currently, two official plugins are available:
+![Formly UI](https://github.com/parthbansal6482/Form-Builder/blob/main/src/assets/hero.png?raw=true)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Features
 
-## React Compiler
+- **Block-Based Editing**: Add, duplicate, delete, and reorder form blocks with ease.
+- **Slash Commands (`/`)**: A lightning-fast way to trigger the block menu and insert fields.
+- **Minimalist Aesthetics**: A strictly monochromatic theme using a custom design system built with Tailwind CSS.
+- **Dual Mode**: Seamlessly switch between **Build** mode and **Preview** mode to test your forms in real-time.
+- **Responsive Canvas**: A fluid workspace designed for clarity and focus.
+- **Modular Architecture**: Built with a highly organized component structure for easy scalability.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## 🛠️ Tech Stack
 
-Note: This will impact Vite dev & build performances.
+- **Framework**: [React](https://react.dev/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS v3](https://tailwindcss.com/)
+- **Icons**: [Material Symbols](https://fonts.google.com/icons)
+- **State Management**: React Context API + `useReducer`
 
-## Expanding the ESLint configuration
+## 🚀 Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/parthbansal6482/Form-Builder.git
+   cd Form-Builder
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Build for production:
+   ```bash
+   npm run build
+   ```
+
+## 📂 Project Structure
+
+```text
+src/
+├── components/      # Modular UI components (NavBar, Canvas, SidePanel, etc.)
+├── context/         # Global state management (FormContext)
+├── App.jsx          # Entry component
+├── FormBuilder.jsx  # Main application orchestrator
+└── index.css        # Global styles & Tailwind directives
+```
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
+
+---
+
+Built with ❤️ by [Parth Bansal](https://github.com/parthbansal6482)
